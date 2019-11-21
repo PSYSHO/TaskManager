@@ -1,5 +1,7 @@
 package AlertClass;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.*;
 
@@ -13,16 +15,16 @@ public class Alert extends Thread {
     public void run() {
         while(true){
             Date now = new Date();
-            Date soon  = new Date(now.getTime());
             for(Task task:journal.getJournal()){
                 if(task.getDate().before(now)){
                     Message(task.title,task.description,task.contacts);
-                    journal.delete(task);
                 }
-                else if(task.getDate().after(now))Message(task.title,task.description,task.contacts);
+                else if(task.getDate().equals(now)){
+                    Message(task.title,task.description,task.contacts);
+                }
             }
             try {
-                Thread.sleep(6000);
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -46,13 +48,23 @@ public class Alert extends Thread {
 
     }
     public static void main(String[] args){
-    Date date = new Date(2019,11,19,20,02);
-    Date test = new Date(2019,11,19,20,05);
+        Journal journal = new Journal();
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        Date date = null,test=null,test1 = null;
+        try {
+            date = f.parse("2019-11-19 20:02");
+            test1 = f.parse("2019-11-21 12:50");
+            test= f.parse("2019-11-21 16:25");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     Task task2 = new Task("Звонок","Звонок домой",test,"Лена-8924214752");
-    Task task = new Task("Звонок","Звонок домой",date,"Вика-8924214752");
-    Journal journal = new Journal();
+    Task task = new Task("Диалог","Звонок на работу",date,"Вика-8924214752");
+    Task task3 = new Task("Звонок","Ремонт машины",test1,"Петрович-8924214752");
     journal.add(task);
     journal.add(task2);
+    journal.add(task3);
     Thread thread = new Alert(journal);
     thread.start();
     //thread.interrupt();
