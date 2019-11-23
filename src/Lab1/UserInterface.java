@@ -72,7 +72,9 @@ public class UserInterface {
                 case "7":
                     try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation1")) {
                         Controller.serialisationTaskLog(fileOutputStream, manager.getTasksList(), true);
-                    } catch (IOException e) {System.out.println(e.getMessage());}
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation")) {
                         for (Task task : manager.getTasksList()) {
@@ -81,15 +83,18 @@ public class UserInterface {
                             }
                         }
                         Controller.serialisationTaskLog(fileOutputStream, managerOut.getTasksList(), false);
-                    } catch (IOException e) { System.out.println(e.getMessage());}
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
 
                     exit = true;
-
+                    thread1.interrupt();
                     try {
                         Method method = Alert.class.getMethod("setExit", boolean.class);
                         method.invoke(run1, false);
                     }
-                    catch (NoSuchMethodException e) { System.out.println(e.getMessage());}
+                    catch (NoSuchMethodException e) {
+                        System.out.println(e.getMessage());}
                     catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }

@@ -52,6 +52,14 @@ public class Task implements Serializable, Comparable<Task> {
         return array;
     }
 
+    public String[] getContactsString() {
+            String[] contacts=new String[contactsList.size()];
+            for (int i = 0; i < contacts.length; i++) {
+                contacts[i]=getContacts()[i].getName()+" "+getContacts()[i].getPhone()+"\n";
+            }
+            return contacts;
+    }
+
     public void setContacts(LinkedList<Contacts> contactsList) {
         this.contactsList = contactsList;
     }
@@ -78,6 +86,7 @@ public class Task implements Serializable, Comparable<Task> {
             for (Contacts element : contactsList) {
                 str.append(i + ". ")
                         .append(element.toString() + "\n");
+                i++;
             }
         }
         return str.toString();
