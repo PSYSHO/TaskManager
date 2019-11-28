@@ -23,15 +23,8 @@ public class UserInterface {
     private static final String path = "TaskLog.json";
     private static final String pathOut ="TaskLogOut.json";
     public void mainMenu() {
-        /*LinkedList<Task> myTaskLog = new LinkedList<>();
-        LinkedList<Task> myTaskLog1 = new LinkedList<>();
-        myTaskLog = downlandTaskLog(myTaskLog);
-        TaskLog manager = new TaskLog("Мой менеджер задач", myTaskLog);
-        myTaskLog1 = downlandTaskLogOut(myTaskLog1);
-        TaskLog managerOut = new TaskLog("Мой менеджер выполненных задач", myTaskLog1);
-        */
         load(path);
-        loadout(pathOut);
+        loadOut(pathOut);
         Runnable run1 = new Alert(taskLog);
         Thread thread1 = new Thread(run1);
         thread1.start();
@@ -85,7 +78,7 @@ public class UserInterface {
                             if (!task.getRelevant()) {
                                 taskLogOut.createTask(task);
                             }
-                        }save(pathOut);
+                        }saveOut(pathOut);
 
 
                     exit = true;
@@ -112,7 +105,7 @@ public class UserInterface {
             }
         }
     }
-    public static void load(String path){
+    public static void load(String path){//todo поменять способ записи сделано с ошибкой!!
         Gson gson = new Gson();
         try {
             FileReader reader = new FileReader(path);
@@ -121,21 +114,29 @@ public class UserInterface {
         } catch (IOException e) {
         }
     }
-    public static void loadout(String pathOut){
+    public static void loadOut(String path){
         Gson gson = new Gson();
         try {
-            FileReader reader = new FileReader(pathOut);
+            FileReader reader = new FileReader(path);
             taskLogOut = gson.fromJson(reader, TaskLog.class);
             reader.close();
         } catch (IOException e) {
         }
-
     }
     public static  void save(String path){
         Gson gson = new Gson();
         try {
             FileWriter writer = new FileWriter(path);
             writer.write(gson.toJson(taskLog));
+            writer.close();
+        } catch (IOException e) {
+        }
+    }
+    public static  void saveOut(String path){
+        Gson gson = new Gson();
+        try {
+            FileWriter writer = new FileWriter(path);
+            writer.write(gson.toJson(taskLogOut));
             writer.close();
         } catch (IOException e) {
         }
