@@ -24,10 +24,10 @@ public class UserInterface {
     private static final String pathOut ="TaskLogOut.json";
     public void mainMenu() {
         /*LinkedList<Task> myTaskLog = new LinkedList<>();
-        //LinkedList<Task> myTaskLog1 = new LinkedList<>();
-        //myTaskLog = downlandTaskLog(myTaskLog);
-        //TaskLog manager = new TaskLog("Мой менеджер задач", myTaskLog);
-        //myTaskLog1 = downlandTaskLogOut(myTaskLog1);
+        LinkedList<Task> myTaskLog1 = new LinkedList<>();
+        myTaskLog = downlandTaskLog(myTaskLog);
+        TaskLog manager = new TaskLog("Мой менеджер задач", myTaskLog);
+        myTaskLog1 = downlandTaskLogOut(myTaskLog1);
         TaskLog managerOut = new TaskLog("Мой менеджер выполненных задач", myTaskLog1);
         */
         load(path);
@@ -80,22 +80,13 @@ public class UserInterface {
                     exitMainMenu(in);
                     break;
                 case "7":
-                    try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation1")) {
                         save(path);
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                    try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation")) {
                         for (Task task : taskLog.getTasksList()) {
                             if (!task.getRelevant()) {
                                 taskLogOut.createTask(task);
                             }
-                        }
-                        save(pathOut);
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
+                        }save(pathOut);
+
 
                     exit = true;
                     thread1.stop();
