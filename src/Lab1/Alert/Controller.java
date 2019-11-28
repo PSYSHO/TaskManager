@@ -1,15 +1,18 @@
-package Lab1;
+package Lab1.Alert;
 
 import Lab1.Entities.Contacts;
 import Lab1.Entities.Task;
 import Lab1.Entities.TaskLog;
+import Lab1.View.UserInterface;
 import com.google.gson.Gson;
 
 import java.io.*;
-import java.lang.reflect.Type;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class Controller {
+    @SuppressWarnings("Deprecated")
 
     public static Task inputTask(Scanner in) throws InputMismatchException, IllegalAccessError {
         boolean exit = true;
@@ -27,24 +30,6 @@ public class Controller {
         LinkedList<Contacts> contacts = inputContacts(in, value, size);
         return new Task(name, description, date, contacts);
     }
-
-    public static void serialisationTaskLog(OutputStream out, LinkedList<Task> linkedListTask, boolean relevant) throws IOException {
-        LinkedList<Task> taskLogList = new LinkedList<Task>();
-        for (Task task : linkedListTask) {
-            if (task.getRelevant() == relevant) {
-                taskLogList.add(task);
-            }
-        }
-        ObjectOutputStream objectOut = new ObjectOutputStream(out);
-        objectOut.writeObject(taskLogList);
-    }
-
-    public static LinkedList<Task> deserialisationTaskLog(InputStream in) throws IOException, ClassNotFoundException {
-        ObjectInputStream objectIn = new ObjectInputStream(in);
-        LinkedList<Task> listTaskLog=(LinkedList<Task>)objectIn.readObject();
-        return  listTaskLog;
-    }
-
     public static String parseString(Scanner in, String name) {
         name = in.nextLine();
         while ("".equals(name)) {
@@ -110,7 +95,6 @@ public class Controller {
         }
         return date;
     }
-
     public static LinkedList<Contacts> inputContacts(Scanner in, String value, int size) {
         LinkedList<Contacts> contacts = new LinkedList<Contacts>();
         if (size > 0) {

@@ -1,28 +1,38 @@
-package Lab1;
+package Lab1.View;
 
-import Lab1.AlertClass.Alert;
+import Lab1.Alert.Alert;
+import Lab1.Alert.Controller;
 import Lab1.Entities.Task;
 import Lab1.Entities.TaskLog;
+import com.google.gson.Gson;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class UserInterface {
+    public static void main(String[] args) {
+        UserInterface userInterface = new UserInterface();
+        userInterface.mainMenu();
+    }
+    private static TaskLog taskLog = new TaskLog();
+    private static TaskLog taskLogOut = new TaskLog();
+    private static boolean stop = false;
+    private static final String path = "TaskLog.json";
+    private static final String pathOut ="TaskLogOut.json";
     public void mainMenu() {
-        LinkedList<Task> myTaskLog = new LinkedList<Task>();
-        LinkedList<Task> myTaskLog1 = new LinkedList<Task>();
-        myTaskLog = downlandTaskLog(myTaskLog);
-        TaskLog manager = new TaskLog("Мой менеджер задач", myTaskLog);
-        myTaskLog1 = downlandTaskLogOut(myTaskLog1);
+        /*LinkedList<Task> myTaskLog = new LinkedList<>();
+        //LinkedList<Task> myTaskLog1 = new LinkedList<>();
+        //myTaskLog = downlandTaskLog(myTaskLog);
+        //TaskLog manager = new TaskLog("Мой менеджер задач", myTaskLog);
+        //myTaskLog1 = downlandTaskLogOut(myTaskLog1);
         TaskLog managerOut = new TaskLog("Мой менеджер выполненных задач", myTaskLog1);
-        Runnable run1 = new Alert(manager);
+        */
+        load(path);
+        loadout(pathOut);
+        Runnable run1 = new Alert(taskLog);
         Thread thread1 = new Thread(run1);
         thread1.start();
         Scanner in = new Scanner(System.in);
@@ -41,54 +51,55 @@ public class UserInterface {
             switch (in.nextLine()) {
                 case "1":
                     cls();
-                    createMenu(manager);
+                    createMenu(taskLog);
                     break;
                 case "2":
                     cls();
-                    deleteMenu(manager);
+                    deleteMenu(taskLog);
                     break;
                 case "3":
                     cls();
-                    setMenu(manager);
+                    setMenu(taskLog);
                     exitMainMenu(in);
                     break;
                 case "4":
                     cls();
-                    System.out.println(manager);
+                    System.out.println(taskLog);
                     exitMainMenu(in);
                     break;
                 case "5":
                     cls();
-                    System.out.println(managerOut);
+                    System.out.println(taskLogOut);
                     exitMainMenu(in);
                     break;
                 case "6":
                     cls();
-                    managerOut.getTasksList().clear();
+                    taskLogOut.getTasksList().clear();
                     System.out.println("Все задачи удалены\n" +
                             "--------------------------------------");
                     exitMainMenu(in);
                     break;
                 case "7":
                     try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation1")) {
-                        Controller.serialisationTaskLog(fileOutputStream, manager.getTasksList(), true);
+                        save(path);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation")) {
-                        for (Task task : manager.getTasksList()) {
+                        for (Task task : taskLog.getTasksList()) {
                             if (!task.getRelevant()) {
-                                managerOut.createTask(task);
+                                taskLogOut.createTask(task);
                             }
                         }
-                        Controller.serialisationTaskLog(fileOutputStream, managerOut.getTasksList(), false);
+                        save(pathOut);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
 
                     exit = true;
-                    thread1.interrupt();
+                    thread1.stop();
+                    //thread1.interrupt();
                     try {
                         Method method = Alert.class.getMethod("setExit", boolean.class);
                         method.invoke(run1, false);
@@ -103,15 +114,44 @@ public class UserInterface {
                     }
                     break;
                 default:
-                    cls();
+                    UserInterface.cls();
                     System.out.println("Неверно введенный символ\n" +
                             "-----------------------------------------");
                     break;
             }
         }
     }
+    public static void load(String path){
+        Gson gson = new Gson();
+        try {
+            FileReader reader = new FileReader(path);
+            taskLog = gson.fromJson(reader, TaskLog.class);
+            reader.close();
+        } catch (IOException e) {
+        }
+    }
+    public static void loadout(String pathOut){
+        Gson gson = new Gson();
+        try {
+            FileReader reader = new FileReader(pathOut);
+            taskLogOut = gson.fromJson(reader, TaskLog.class);
+            reader.close();
+        } catch (IOException e) {
+        }
 
-    private void createMenu(TaskLog manager) {
+    }
+    public static  void save(String path){
+        Gson gson = new Gson();
+        try {
+            FileWriter writer = new FileWriter(path);
+            writer.write(gson.toJson(taskLog));
+            writer.close();
+        } catch (IOException e) {
+        }
+    }
+
+
+    public void createMenu(TaskLog manager) {
         Scanner in = new Scanner(System.in);
         boolean exitCreateMenu = false;
         System.out.println(
@@ -137,7 +177,7 @@ public class UserInterface {
         }
     }
 
-    private void deleteMenu(TaskLog manager) {
+    public void deleteMenu(TaskLog manager) {
         Scanner in = new Scanner(System.in);
         String value = "";
         boolean exitCreateMenu = false;
@@ -175,7 +215,7 @@ public class UserInterface {
         }
     }
 
-    private void setMenu(TaskLog manager) {
+    public void setMenu(TaskLog manager) {
         Scanner in = new Scanner(System.in);
         String value = "";
         boolean exitCreateMenu = false;
@@ -268,7 +308,7 @@ public class UserInterface {
         }
     }
 
-    private void exitMainMenu(Scanner in) {
+    public void exitMainMenu(Scanner in) {
         System.out.println("\n" +
                 "Чтобы выйти в главное меню нажмите 1");
         String q = in.nextLine();
@@ -282,26 +322,6 @@ public class UserInterface {
                         "-------------------------------------------");
                 break;
         }
-    }
-
-    private LinkedList<Task> downlandTaskLog(LinkedList<Task> myTaskLog) {
-        try (FileInputStream fileInputStream = new FileInputStream("serialisation1")) {
-            myTaskLog = Controller.deserialisationTaskLog(fileInputStream);
-            System.out.println("\nЗадачи успешно сохранились");
-        } catch (ClassNotFoundException e) {
-        } catch (IOException e) {
-        }
-        return myTaskLog;
-    }
-
-    private LinkedList<Task> downlandTaskLogOut(LinkedList<Task> myTaskLog) {
-        try (FileInputStream fileInputStream = new FileInputStream("serialisation")) {
-            myTaskLog = Controller.deserialisationTaskLog(fileInputStream);
-            System.out.println("\nЗадачи успешно сохранились");
-        } catch (ClassNotFoundException e) {
-        } catch (IOException e) {
-        }
-        return myTaskLog;
     }
 
     public static void cls() {

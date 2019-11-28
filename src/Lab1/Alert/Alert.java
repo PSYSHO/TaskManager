@@ -1,11 +1,10 @@
-package Lab1.AlertClass;
+package Lab1.Alert;
 
 import Lab1.Entities.Task;
 import Lab1.Entities.TaskLog;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 
 
