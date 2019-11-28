@@ -4,6 +4,7 @@ import Lab1.AlertClass.Alert;
 import Lab1.Entities.Task;
 import Lab1.Entities.TaskLog;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,17 +14,24 @@ import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Scanner;
+import static Lab1.Utilities.Utilities.*;
 
 public class UserInterface {
+    private TaskLog manager;
+    private TaskLog managerOut;
+    private Controller controller=new Controller();
+
+    public UserInterface(TaskLog manager,TaskLog managerOut){
+        this.manager=manager;
+        this.managerOut=managerOut;
+    }
+
     public void mainMenu() {
-        LinkedList<Task> myTaskLog = new LinkedList<Task>();
-        LinkedList<Task> myTaskLog1 = new LinkedList<Task>();
-        myTaskLog = downlandTaskLog(myTaskLog);
-        TaskLog manager = new TaskLog("Мой менеджер задач", myTaskLog);
-        myTaskLog1 = downlandTaskLogOut(myTaskLog1);
-        TaskLog managerOut = new TaskLog("Мой менеджер выполненных задач", myTaskLog1);
-        Runnable run1 = new Alert(manager);
+        manager=controller.downlandTaskLog(new File("relevantFile"),manager);
+        managerOut=controller.downlandTaskLog(new File("noRelevantFile"),managerOut);
+        Runnable run1 = new Alert(controller,manager,managerOut);
         Thread thread1 = new Thread(run1);
+        thread1.setDaemon(true);
         thread1.start();
         Scanner in = new Scanner(System.in);
         boolean exit = false;
@@ -41,15 +49,21 @@ public class UserInterface {
             switch (in.nextLine()) {
                 case "1":
                     cls();
-                    createMenu(manager);
+                    try {
+                        createMenu(manager);
+                    }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
                     break;
                 case "2":
                     cls();
-                    deleteMenu(manager);
+                    try {
+                        deleteMenu(manager);
+                    }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
                     break;
                 case "3":
                     cls();
-                    setMenu(manager);
+                    try{
+                        setMenu(manager);
+                    }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
                     exitMainMenu(in);
                     break;
                 case "4":
@@ -70,23 +84,6 @@ public class UserInterface {
                     exitMainMenu(in);
                     break;
                 case "7":
-                    try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation1")) {
-                        Controller.serialisationTaskLog(fileOutputStream, manager.getTasksList(), true);
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                    try (FileOutputStream fileOutputStream = new FileOutputStream("serialisation")) {
-                        for (Task task : manager.getTasksList()) {
-                            if (!task.getRelevant()) {
-                                managerOut.createTask(task);
-                            }
-                        }
-                        Controller.serialisationTaskLog(fileOutputStream, managerOut.getTasksList(), false);
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-
                     exit = true;
                     thread1.interrupt();
                     try {
@@ -95,11 +92,22 @@ public class UserInterface {
                     }
                     catch (NoSuchMethodException e) {
                         System.out.println(e.getMessage());}
-                    catch (IllegalAccessException e) {
+                    catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
-                    catch (InvocationTargetException e) {
-                        e.printStackTrace();
+                    try (FileOutputStream fileOutputStream = new FileOutputStream("relevantFile")) {
+                        controller.serialisationTaskLog(fileOutputStream, manager, true);
+                    } catch (IOException e) { }
+                    finally {
+                        exit = true;
+                    }
+
+                    try (FileOutputStream fileOutputStream = new FileOutputStream("noRelevantFile")) {
+                        controller.serialisationTaskLog(fileOutputStream,managerOut,  false);
+                    } catch (IOException e) { }
+                    finally {
+
+                        thread1.interrupt();
                     }
                     break;
                 default:
@@ -111,7 +119,7 @@ public class UserInterface {
         }
     }
 
-    private void createMenu(TaskLog manager) {
+    private void createMenu(TaskLog manager)throws InterruptedException {
         Scanner in = new Scanner(System.in);
         boolean exitCreateMenu = false;
         System.out.println(
@@ -121,7 +129,9 @@ public class UserInterface {
         switch (str) {
             case "1":
                 cls();
-                manager.createTask(Controller.inputTask(in));
+                controller.setFlag(false);
+                manager.createTask(controller.inputTask(in));
+                controller.setFlag(true);
                 cls();
                 System.out.println("Элемент успешно добавлен\n " +
                         "------------------------------------------");
@@ -137,45 +147,54 @@ public class UserInterface {
         }
     }
 
-    private void deleteMenu(TaskLog manager) {
+    private void deleteMenu(TaskLog manager) throws InterruptedException {
         Scanner in = new Scanner(System.in);
         String value = "";
         boolean exitCreateMenu = false;
-        System.out.println(
-                "1.Удалить задачу;\n" +
-                        "2.Назад;\n");
-        String str = in.nextLine();
-        switch (str) {
-            case "1":
-                cls();
-                while (!exitCreateMenu) {
-                    System.out.println(manager);
-                    System.out.println("Введите индекс элемента который нужно удалить ");
-                    int num = Controller.parseInt(in, value);
-                    if ((num > -1) && (num < manager.getSize())) {
-                        manager.deleteTask(num);
-                        cls();
-                        System.out.println("Элемент успешно удален\n " +
-                                "------------------------------------------");
-                        exitCreateMenu = true;
-                    } else {
-                        cls();
-                        System.out.println("Неверно введенный индекс" +
-                                "----------------------------------------------");
+        if(manager.getSize()>0) {
+            while (!exitCreateMenu) {
+                System.out.println(manager);
+                System.out.println("Введите индекс элемента который нужно удалить ");
+                int num = parseInt(in, value);
+                if ((num > -1) && (num < manager.getSize())) {
+                    cls();
+                    System.out.println("Вы точно хотите удалить " + num + " задачу?\n" +
+                            "Если - да, нажмите 1\n" +
+                            "Если нет - то, нажмите 2");
+                    String num1 = parseString(in, value);
+                    switch (num1) {
+                        case "1":
+                            controller.setFlag(false);
+                            controller.deleteTask(num,manager);
+                            controller.setFlag(true);
+                            cls();
+                            System.out.println("Элемент успешно удален\n " +
+                                    "------------------------------------------");
+                            exitCreateMenu = true;
+                            break;
+                        case "2":
+                            cls();
+                            exitCreateMenu = true;
+                            break;
+                        default:
+                            cls();
+                            System.out.println("Неверно введенный символ\n" +
+                                    "--------------------------------------------");
+                            break;
                     }
+                } else {
+                    cls();
+                    System.out.println("Неверно введенный индекс\n" +
+                            "----------------------------------------------");
                 }
-                break;
-            case "2":
-                break;
-            default:
-                cls();
-                System.out.println("Неверно введенный символ\n" +
-                        "--------------------------------------------");
-                break;
+            }
+        }else{
+           System.out.println("Журнал задач пуст\n" +
+                   "----------------------------------------------");
         }
     }
 
-    private void setMenu(TaskLog manager) {
+    private void setMenu(TaskLog manager)throws InterruptedException {
         Scanner in = new Scanner(System.in);
         String value = "";
         boolean exitCreateMenu = false;
@@ -190,7 +209,7 @@ public class UserInterface {
                 while (!exitCreateMenu) {
                     System.out.println(manager);
                     System.out.println("Введите индекс задачи, которую хотите изменить:");
-                    int num = Controller.parseInt(in, value);
+                    int num = parseInt(in, value);
                     if ((num > -1) && (num < manager.getSize())) {
                         System.out.println("\nВведите все данные заного для задачи которую хотите изменить:");
                         manager.setTask(num, Controller.inputTask(in));
@@ -210,7 +229,7 @@ public class UserInterface {
                 while (!exitCreateMenu) {
                     System.out.println(manager);
                     System.out.println("Введите индекс задачи, которую хотите изменить(отсчет c 0):");
-                    int num = Controller.parseInt(in, value);
+                    int num = parseInt(in, value);
                     if ((num > -1) && (num < manager.getSize())) {
                         cls();
                         System.out.println(
@@ -239,7 +258,7 @@ public class UserInterface {
                             case "4":
                                 cls();
                                 System.out.println("Введите количество новых контактов:");
-                                int size = Controller.parseInt(in, value);
+                                int size = parseInt(in, value);
                                 manager.getTaskLog()[num].setContacts(Controller.inputContacts(in, value, size));
                                 break;
                             default:
@@ -281,34 +300,6 @@ public class UserInterface {
                 System.out.println("Неверно введенный символ\n" +
                         "-------------------------------------------");
                 break;
-        }
-    }
-
-    private LinkedList<Task> downlandTaskLog(LinkedList<Task> myTaskLog) {
-        try (FileInputStream fileInputStream = new FileInputStream("serialisation1")) {
-            myTaskLog = Controller.deserialisationTaskLog(fileInputStream);
-            System.out.println("\nЗадачи успешно сохранились");
-        } catch (ClassNotFoundException e) {
-        } catch (IOException e) {
-        }
-        return myTaskLog;
-    }
-
-    private LinkedList<Task> downlandTaskLogOut(LinkedList<Task> myTaskLog) {
-        try (FileInputStream fileInputStream = new FileInputStream("serialisation")) {
-            myTaskLog = Controller.deserialisationTaskLog(fileInputStream);
-            System.out.println("\nЗадачи успешно сохранились");
-        } catch (ClassNotFoundException e) {
-        } catch (IOException e) {
-        }
-        return myTaskLog;
-    }
-
-    public static void cls() {
-        int ln = 0;
-        while (ln < 50) {
-            System.out.println();
-            ln++;
         }
     }
 }
