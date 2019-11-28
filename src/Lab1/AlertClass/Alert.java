@@ -31,14 +31,18 @@ public class Alert implements Runnable, Serializable {
     @Override
     public void run() {
         int count = -1;
-        while (exit) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 count = controller.notification(manager);
-            }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
+            }catch(InterruptedException e)
+            {
+                break;
+            }
             if (count>-1) {
                 cwd.writeDelete(count);
             }
         }
+        System.out.println("ВЫХОД");
     }
 }
 

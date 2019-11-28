@@ -13,11 +13,10 @@ public class ControllerWriteDelete {
     }
 
     public void writeDelete(int count) {
-        int i = -1;
-        while (i < count) {
-            managerOut.createTask(manager.getTasks()[count]);
-            manager.deleteTask(count);
-            i++;
+        int i = 0;
+        while((manager.getSize()!=0)&(!manager.getTasks()[0].getRelevant())){
+            managerOut.createTask(manager.getTasks()[0]);
+            manager.deleteTask(0);
         }
 
     }

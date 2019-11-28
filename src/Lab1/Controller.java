@@ -130,14 +130,14 @@ public class Controller {
         Date now = new Date();
         for (Task task : manager.getTasksList()) {
             if ((task.getData().before(now)) & (task.getRelevant())) {
-                Message(task.getName(), task.getDescription(), task.getContactsString());
+                message(task.getName(), task.getDescription(), task.getContactsString());
 
                 task.setRelevant(false);
                 count++;
                 break;
                 //удалить из менеджера и отправить в таскаут
             } else if ((task.getData().equals(now)) & (task.getRelevant())) {
-                Message(task.getName(), task.getDescription(), task.getContactsString());
+                message(task.getName(), task.getDescription(), task.getContactsString());
                 task.setRelevant(false);
 
                 count++;
@@ -148,23 +148,23 @@ public class Controller {
         return count;
     }
 
-    public static void Message(String title, String description, String[] contact) {
+    public  void message(String title, String description, String[] contact) {
 
         if (SystemTray.isSupported()) {
             SystemTray systemTray = SystemTray.getSystemTray();
-            java.awt.Image image = Toolkit.getDefaultToolkit().getImage("Image/tray.gif");
-            TrayIcon trayIcon = new TrayIcon(image);
-            try {
-                systemTray.add(trayIcon);
-            } catch (AWTException e) {
-                e.printStackTrace();
-            }
+           java.awt.Image image = Toolkit.getDefaultToolkit().getImage("logout.ico");
+           TrayIcon trayIcon = new TrayIcon(image);
+           try {
+               systemTray.add(trayIcon);
+           } catch (AWTException e) {
+               e.printStackTrace();
+           }
             String contacts="";
             for(String element:contact){
                 contacts=contacts+element;
             }
             trayIcon.displayMessage(title, description + "\n" + contacts, TrayIcon.MessageType.INFO);
-            System.out.println(title + " " + description);
+            systemTray.remove(trayIcon);
         }
     }
 }

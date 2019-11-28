@@ -29,7 +29,7 @@ public class UserInterface {
     public void mainMenu() {
         manager=controller.downlandTaskLog(new File("relevantFile"),manager);
         managerOut=controller.downlandTaskLog(new File("noRelevantFile"),managerOut);
-        Runnable run1 = new Alert(controller,manager,managerOut);
+        Alert run1 = new Alert(controller,manager,managerOut);
         Thread thread1 = new Thread(run1);
         thread1.setDaemon(true);
         thread1.start();
@@ -84,9 +84,10 @@ public class UserInterface {
                     exitMainMenu(in);
                     break;
                 case "7":
-                    exit = true;
-                    thread1.interrupt();
+                    //exit = true;
+                    //thread1.interrupt();
                     try {
+
                         Method method = Alert.class.getMethod("setExit", boolean.class);
                         method.invoke(run1, false);
                     }
@@ -106,7 +107,6 @@ public class UserInterface {
                         controller.serialisationTaskLog(fileOutputStream,managerOut,  false);
                     } catch (IOException e) { }
                     finally {
-
                         thread1.interrupt();
                     }
                     break;
@@ -116,7 +116,9 @@ public class UserInterface {
                             "-----------------------------------------");
                     break;
             }
+
         }
+
     }
 
     private void createMenu(TaskLog manager)throws InterruptedException {
@@ -200,7 +202,7 @@ public class UserInterface {
         boolean exitCreateMenu = false;
         System.out.println(
                 "1.Изменить всю задачу;\n" +
-                        "2.Изменить отдельные компоненты программы\n" +
+                        "2.Изменить отдельные компоненты задачи\n" +
                         "3.Назад;\n");
         String str = in.nextLine();
         switch (str) {
