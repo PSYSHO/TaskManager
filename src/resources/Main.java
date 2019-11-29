@@ -1,11 +1,9 @@
-package taskmanager;
+package resources;
 
-import taskmanager.controllers.Controller;
-import taskmanager.entities.Task;
-import taskmanager.entities.TaskLog;
-import taskmanager.view.UserInterface;
+import resources.entities.Task;
+import resources.entities.TaskLog;
+import resources.view.UserInterface;
 
-import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 
 public class Main {

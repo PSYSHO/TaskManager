@@ -1,4 +1,4 @@
-package taskmanager.entities;
+package resources.entities;
 
 import java.io.Serializable;
 

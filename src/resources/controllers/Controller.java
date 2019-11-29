@@ -1,14 +1,14 @@
-package taskmanager.controllers;
+package resources.controllers;
 
-import taskmanager.entities.Contacts;
-import taskmanager.entities.Task;
-import taskmanager.entities.TaskLog;
+import resources.entities.Contacts;
+import resources.entities.Task;
+import resources.entities.TaskLog;
 import com.google.gson.*;
 
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import static taskmanager.utilities.Utilities.*;
+import static resources.utilities.Utilities.*;
 
 public class Controller {
     private volatile boolean flag;

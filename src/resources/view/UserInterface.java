@@ -1,13 +1,13 @@
-package taskmanager.view;
+package resources.view;
 
-import taskmanager.alert.Alert;
-import taskmanager.controllers.Controller;
-import taskmanager.entities.TaskLog;
+import resources.alert.Alert;
+import resources.controllers.Controller;
+import resources.entities.TaskLog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Scanner;
-import static taskmanager.utilities.Utilities.*;
+import static resources.utilities.Utilities.*;
 
 public class UserInterface {
     private TaskLog manager;

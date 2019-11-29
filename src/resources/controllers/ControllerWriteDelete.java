@@ -1,6 +1,6 @@
-package taskmanager.controllers;
+package resources.controllers;
 
-import taskmanager.entities.TaskLog;
+import resources.entities.TaskLog;
 
 public class ControllerWriteDelete {
     private volatile TaskLog manager;

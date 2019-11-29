@@ -1,8 +1,8 @@
-package taskmanager.alert;
+package resources.alert;
 
-import taskmanager.controllers.Controller;
-import taskmanager.controllers.ControllerWriteDelete;
-import taskmanager.entities.TaskLog;
+import resources.controllers.Controller;
+import resources.controllers.ControllerWriteDelete;
+import resources.entities.TaskLog;
 
 import java.io.Serializable;
 
