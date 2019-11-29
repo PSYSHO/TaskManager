@@ -1,4 +1,4 @@
-package Lab1.Entities;
+package taskmanager.entities;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -9,6 +9,8 @@ public class TaskLog implements Serializable {
     private LinkedList<Task> tasksList = new LinkedList<Task>();
     private LinkedList<Task> tasksListNoRelevant = new LinkedList<Task>();
 
+    public TaskLog(){
+    }
     public TaskLog(String name) {
         this.name = name;
     }
@@ -18,8 +20,6 @@ public class TaskLog implements Serializable {
         this.tasksList = tasksList;
     }
 
-    public TaskLog() {
-    }
 
     public String getName() {
         return name;

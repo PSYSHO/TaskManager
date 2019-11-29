@@ -1,7 +1,6 @@
-package Lab1;
+package taskmanager.controllers;
 
-import Lab1.Entities.Task;
-import Lab1.Entities.TaskLog;
+import taskmanager.entities.TaskLog;
 
 public class ControllerWriteDelete {
     private volatile TaskLog manager;
@@ -12,12 +11,17 @@ public class ControllerWriteDelete {
         this.managerOut = managerOut;
     }
 
-    public void writeDelete(int count) {
+    /*public void writeDelete(int count) {
         int i = 0;
         while((manager.getSize()!=0)&(!manager.getTasks()[0].getRelevant())){
             managerOut.createTask(manager.getTasks()[0]);
             manager.deleteTask(0);
         }
-
+    }*/
+    public void Delete(){
+        while(manager.getTasks().length!=0){
+            managerOut.createTask(manager.getTasks()[0]);
+            manager.deleteTask(0);
+        }
     }
 }

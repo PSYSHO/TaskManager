@@ -1,14 +1,10 @@
-package Lab1.AlertClass;
+package taskmanager.alert;
 
-import Lab1.Controller;
-import Lab1.ControllerWriteDelete;
-import Lab1.Entities.Task;
-import Lab1.Entities.TaskLog;
+import taskmanager.controllers.Controller;
+import taskmanager.controllers.ControllerWriteDelete;
+import taskmanager.entities.TaskLog;
 
-import java.awt.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
 
 
 public class Alert implements Runnable, Serializable {
@@ -39,7 +35,7 @@ public class Alert implements Runnable, Serializable {
                 break;
             }
             if (count>-1) {
-                cwd.writeDelete(count);
+                cwd.Delete();
             }
         }
         System.out.println("ВЫХОД");

@@ -1,4 +1,4 @@
-package Lab1.Entities;
+package taskmanager.entities;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;

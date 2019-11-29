@@ -1,34 +1,30 @@
-package Lab1;
+package taskmanager.view;
 
-import Lab1.AlertClass.Alert;
-import Lab1.Entities.Task;
-import Lab1.Entities.TaskLog;
+import taskmanager.alert.Alert;
+import taskmanager.controllers.Controller;
+import taskmanager.entities.TaskLog;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.InputMismatchException;
-import java.util.LinkedList;
 import java.util.Scanner;
-import static Lab1.Utilities.Utilities.*;
+import static taskmanager.utilities.Utilities.*;
 
 public class UserInterface {
     private TaskLog manager;
     private TaskLog managerOut;
     private Controller controller=new Controller();
-
+    private final String path = "TaskLog";
+    private final String pathOut = "TaskLogOut";
     public UserInterface(TaskLog manager,TaskLog managerOut){
         this.manager=manager;
         this.managerOut=managerOut;
     }
 
     public void mainMenu() {
-        manager=controller.downlandTaskLog(new File("relevantFile"),manager);
-        managerOut=controller.downlandTaskLog(new File("noRelevantFile"),managerOut);
+        manager =controller.load(path);
+        managerOut = controller.load(pathOut);
+        //manager=controller.downlandTaskLog(new File("relevantFile"),manager);
+        //managerOut=controller.downlandTaskLog(new File("noRelevantFile"),managerOut);
         Alert run1 = new Alert(controller,manager,managerOut);
         Thread thread1 = new Thread(run1);
         thread1.setDaemon(true);
@@ -96,19 +92,11 @@ public class UserInterface {
                     catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
-                    try (FileOutputStream fileOutputStream = new FileOutputStream("relevantFile")) {
-                        controller.serialisationTaskLog(fileOutputStream, manager, true);
-                    } catch (IOException e) { }
-                    finally {
+                    controller.save(path,manager);
                         exit = true;
-                    }
 
-                    try (FileOutputStream fileOutputStream = new FileOutputStream("noRelevantFile")) {
-                        controller.serialisationTaskLog(fileOutputStream,managerOut,  false);
-                    } catch (IOException e) { }
-                    finally {
+                    controller.save(pathOut,managerOut);
                         thread1.interrupt();
-                    }
                     break;
                 default:
                     cls();

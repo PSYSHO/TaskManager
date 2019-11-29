@@ -1,4 +1,4 @@
-package Lab1.Utilities;
+package taskmanager.utilities;
 
 import java.util.Scanner;
 

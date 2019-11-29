@@ -1,15 +1,14 @@
-package Lab1;
+package taskmanager.controllers;
 
-import Lab1.Entities.Contacts;
-import Lab1.Entities.Task;
-import Lab1.Entities.TaskLog;
-import com.google.gson.Gson;
+import taskmanager.entities.Contacts;
+import taskmanager.entities.Task;
+import taskmanager.entities.TaskLog;
+import com.google.gson.*;
 
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.*;
-import static Lab1.Utilities.Utilities.*;
+import static taskmanager.utilities.Utilities.*;
 
 public class Controller {
     private volatile boolean flag;
@@ -20,6 +19,26 @@ public class Controller {
 
     public void setFlag(boolean flag){
         this.flag=flag;
+    }
+    public TaskLog load(String path){
+        TaskLog taskLog = new TaskLog();
+        Gson gson = new Gson();
+        try {
+            FileReader reader = new FileReader(path);
+            taskLog = gson.fromJson(reader, TaskLog.class);
+            reader.close();
+        } catch (IOException e) {
+        }
+        return taskLog;
+    }
+    public void save(String path,TaskLog taskLog){
+        Gson gson = new Gson();
+        try {
+            FileWriter writer = new FileWriter(path);
+            writer.write(gson.toJson(taskLog));
+            writer.close();
+        } catch (IOException e) {
+        }
     }
 
     public static Task inputTask(Scanner in) throws InputMismatchException, IllegalAccessError {
