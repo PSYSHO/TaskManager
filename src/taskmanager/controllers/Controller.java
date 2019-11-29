@@ -49,7 +49,7 @@ public class Controller {
         String description = "";
         System.out.println("Введите название задачи:");
         name = parseString(in, name);
-        System.out.println("Введите название описание задачи:");
+        System.out.println("Введите описание задачи:");
         description = parseString(in, description);
         date = inputDate(in);
         System.out.print("Какое количество контактов вам понадобится: ");

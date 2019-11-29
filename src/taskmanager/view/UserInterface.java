@@ -232,7 +232,7 @@ public class UserInterface {
                         switch (str1) {
                             case "1":
                                 cls();
-                                System.out.println("Введите название имени:");
+                                System.out.println("Введите имя:");
                                 manager.getTaskLog()[num].setName(in.nextLine());
                                 break;
                             case "2":
