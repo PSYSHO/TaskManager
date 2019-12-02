@@ -19,7 +19,7 @@ public class ControllerWriteDelete {
         }
     }*/
     public void Delete(){
-        while(manager.getTasks().length!=0){
+        while((manager.getTasks().length!=0)&&(!manager.getTasks()[0].getRelevant())){
             managerOut.createTask(manager.getTasks()[0]);
             manager.deleteTask(0);
         }

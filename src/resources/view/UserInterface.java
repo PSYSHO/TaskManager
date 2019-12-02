@@ -2,30 +2,34 @@ package resources.view;
 
 import resources.alert.Alert;
 import resources.controllers.Controller;
+import resources.entities.Task;
 import resources.entities.TaskLog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.Scanner;
+
 import static resources.utilities.Utilities.*;
 
 public class UserInterface {
     private TaskLog manager;
     private TaskLog managerOut;
-    private Controller controller=new Controller();
+    private Controller controller = new Controller();
     private final String path = "TaskLog";
     private final String pathOut = "TaskLogOut";
-    public UserInterface(TaskLog manager,TaskLog managerOut){
-        this.manager=manager;
-        this.managerOut=managerOut;
+
+    public UserInterface(TaskLog manager, TaskLog managerOut) {
+        this.manager = manager;
+        this.managerOut = managerOut;
     }
 
     public void mainMenu() {
-        manager =controller.load(path);
+        //manager=controller.testTaskLog();
+        //managerOut=new TaskLog("Tecт",new LinkedList<Task>());
+        manager = controller.load(path);
         managerOut = controller.load(pathOut);
-        //manager=controller.downlandTaskLog(new File("relevantFile"),manager);
-        //managerOut=controller.downlandTaskLog(new File("noRelevantFile"),managerOut);
-        Alert run1 = new Alert(controller,manager,managerOut);
+        Alert run1 = new Alert(controller, manager, managerOut);
         Thread thread1 = new Thread(run1);
         thread1.setDaemon(true);
         thread1.start();
@@ -47,19 +51,25 @@ public class UserInterface {
                     cls();
                     try {
                         createMenu(manager);
-                    }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
+                    } catch (InterruptedException e) {
+                        System.out.println("Ошибка типа InterruptedException");
+                    }
                     break;
                 case "2":
                     cls();
                     try {
                         deleteMenu(manager);
-                    }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
+                    } catch (InterruptedException e) {
+                        System.out.println("Ошибка типа InterruptedException");
+                    }
                     break;
                 case "3":
                     cls();
-                    try{
+                    try {
                         setMenu(manager);
-                    }catch(InterruptedException e){System.out.println("Ошибка типа InterruptedException");}
+                    } catch (InterruptedException e) {
+                        System.out.println("Ошибка типа InterruptedException");
+                    }
                     exitMainMenu(in);
                     break;
                 case "4":
@@ -80,23 +90,19 @@ public class UserInterface {
                     exitMainMenu(in);
                     break;
                 case "7":
-                    //exit = true;
-                    //thread1.interrupt();
                     try {
-
                         Method method = Alert.class.getMethod("setExit", boolean.class);
                         method.invoke(run1, false);
-                    }
-                    catch (NoSuchMethodException e) {
-                        System.out.println(e.getMessage());}
-                    catch (IllegalAccessException | InvocationTargetException e) {
+                    } catch (NoSuchMethodException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
-                    controller.save(path,manager);
-                        exit = true;
+                    controller.save(path, manager);
+                    exit = true;
 
-                    controller.save(pathOut,managerOut);
-                        thread1.interrupt();
+                    controller.save(pathOut, managerOut);
+                    thread1.interrupt();
                     break;
                 default:
                     cls();
@@ -109,7 +115,7 @@ public class UserInterface {
 
     }
 
-    private void createMenu(TaskLog manager)throws InterruptedException {
+    private void createMenu(TaskLog manager) throws InterruptedException {
         Scanner in = new Scanner(System.in);
         boolean exitCreateMenu = false;
         System.out.println(
@@ -141,7 +147,7 @@ public class UserInterface {
         Scanner in = new Scanner(System.in);
         String value = "";
         boolean exitCreateMenu = false;
-        if(manager.getSize()>0) {
+        if (manager.getSize() > 0) {
             while (!exitCreateMenu) {
                 System.out.println(manager);
                 System.out.println("Введите индекс элемента который нужно удалить ");
@@ -155,7 +161,7 @@ public class UserInterface {
                     switch (num1) {
                         case "1":
                             controller.setFlag(false);
-                            controller.deleteTask(num,manager);
+                            controller.deleteTask(num, manager);
                             controller.setFlag(true);
                             cls();
                             System.out.println("Элемент успешно удален\n " +
@@ -178,13 +184,13 @@ public class UserInterface {
                             "----------------------------------------------");
                 }
             }
-        }else{
-           System.out.println("Журнал задач пуст\n" +
-                   "----------------------------------------------");
+        } else {
+            System.out.println("Журнал задач пуст\n" +
+                    "----------------------------------------------");
         }
     }
 
-    private void setMenu(TaskLog manager)throws InterruptedException {
+    private void setMenu(TaskLog manager) throws InterruptedException {
         Scanner in = new Scanner(System.in);
         String value = "";
         boolean exitCreateMenu = false;
